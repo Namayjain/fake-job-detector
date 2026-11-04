@@ -1,0 +1,37 @@
+# Virtual Environment
+backend/venv/
+venv/
+ENV/
+env/
+.venv/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node & Next.js
+frontend/node_modules/
+node_modules/
+frontend/.next/
+.next/
+out/
+build/
+dist/
+
+# Environment variables
+.env.local
+.env.*.local
+frontend/.env.local
+frontend/.env.*.local
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
