@@ -30,6 +30,8 @@ An end-to-end full-stack AI/ML application for predicting and authenticating onl
 
 ```
 fake-job-detector/
+├── SCSCIT_Job_Authenticator_Complete_Documentation.docx  # Comprehensive Word documentation & Viva guide
+├── generate_docs.py                   # Script generating the Word documentation
 ├── backend/
 │   ├── best_fake_job_model.joblib     # Trained CalibratedClassifierCV model
 │   ├── tfidf_vectorizer.joblib        # Fitted 6000-feature TfidfVectorizer
@@ -39,17 +41,47 @@ fake-job-detector/
 │   └── venv/                          # Local Python virtual environment
 ├── frontend/
 │   ├── src/
-│   │   └── app/
-│   │       ├── globals.css            # Tailwind CSS & glassmorphic styling
-│   │       ├── layout.tsx             # Root layout with dark mode metadata
-│   │       └── page.tsx               # Next.js interactive dashboard & sample loaders
+│   │   ├── app/
+│   │   │   ├── globals.css            # Tailwind CSS styling
+│   │   │   ├── layout.tsx             # Root layout with Plus Jakarta Sans font
+│   │   │   └── page.tsx               # Next.js main single-page layout
+│   │   └── components/
+│   │       ├── Navbar.tsx             # Sticky navigation with live backend health probe
+│   │       ├── HeroSection.tsx        # Hero section with stats and 3D canvas
+│   │       ├── Hero3DCanvas.tsx       # Interactive Three.js WebGL 3D security core
+│   │       ├── AuthenticatorApp.tsx   # Interactive job input form and results
+│   │       ├── ThreatIntelligence.tsx # 4 common recruitment scam vectors
+│   │       ├── ModelArchitecture.tsx  # 5-step NLP pipeline and evaluation metrics
+│   │       ├── AcademicSection.tsx    # SCSCIT academic project scope
+│   │       └── Footer.tsx             # Project footer and documentation links
 │   ├── public/
-│   ├── package.json                   # Next.js & Lucide dependencies
+│   │   └── images/                    # Curated high-resolution illustrations
+│   ├── package.json                   # Next.js, Three.js, Canvas-Confetti dependencies
 │   ├── tailwind.config.ts             # Tailwind CSS theme configuration
 │   ├── tsconfig.json                  # TypeScript compiler settings
 │   ├── .env.local                     # Local environment configuration
 │   └── .env.example
 └── README.md
+```
+
+---
+
+## 📄 Comprehensive Word Documentation & Viva Guide
+
+A detailed, formatted Microsoft Word Document (`.docx`) is included directly in the root directory:
+**`SCSCIT_Job_Authenticator_Complete_Documentation.docx`**
+
+### What It Contains:
+1. **Executive Summary & Motivation**: Real-world recruitment fraud context and statistical damages.
+2. **System Architecture**: High-level diagrams, client-server data flow, and pipeline lifecycle.
+3. **Exhaustive File-by-File Reference**: Table detailing the technology, purpose, and role of every file.
+4. **Code Explanations**: In-depth walkthroughs of `backend/main.py` functions and frontend React state management.
+5. **Theory & Technical Rationale ("What We Used and Why")**: Why LinearSVC, why Platt Sigmoid Calibration, why TF-IDF (1, 2) n-grams with 6,000 features, WordNet lemmatization, and class imbalance.
+6. **20 Viva Voce Questions & Answers**: Complete Q&A guide prepared for academic viva presentations and project evaluations.
+
+To regenerate this document at any time:
+```powershell
+python generate_docs.py
 ```
 
 ---
