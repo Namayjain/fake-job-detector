@@ -4,7 +4,6 @@ import React from "react";
 import {
   ShieldCheck,
   Github,
-  BookOpen,
   ExternalLink,
   Code2,
   Terminal,
@@ -17,73 +16,68 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+    <footer className="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-800 text-xs">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
           
-          {/* Brand Col */}
-          <div className="space-y-3 md:col-span-1">
-            <div className="flex items-center space-x-2 text-white font-extrabold text-base">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 text-white font-bold text-sm">
+              <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
                 <ShieldCheck className="w-4 h-4" />
               </div>
-              <span>SCSCIT AUTHENTICATOR</span>
+              <span>SCSCIT JOB-AUTHENTICATOR</span>
             </div>
-            <p className="text-slate-400 leading-relaxed text-[11px]">
-              School of Computer Science &amp; Information Technology subject thesis project for automated job fraud prediction.
+            <p className="text-slate-400 text-xs leading-relaxed">
+              School of Computer Science &amp; Information Technology project for automated real vs. fake job posting detection.
             </p>
           </div>
 
-          {/* Quick Nav */}
           <div className="space-y-2">
-            <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">
+            <h4 className="font-semibold text-white uppercase text-[11px] tracking-wider">
               Navigation
             </h4>
-            <ul className="space-y-1.5 font-medium">
+            <ul className="space-y-1.5 text-slate-400">
               <li>
                 <button onClick={() => scrollTo("detector")} className="hover:text-white transition-colors">
-                  Live Detector Terminal
+                  Job Detector
                 </button>
               </li>
               <li>
                 <button onClick={() => scrollTo("threat-intelligence")} className="hover:text-white transition-colors">
-                  Threat Intelligence
+                  Common Scams
                 </button>
               </li>
               <li>
-                <button onClick={() => scrollTo("architecture")} className="hover:text-white transition-colors">
-                  ML Architecture
+                <button onClick={() => scrollTo("how-it-works")} className="hover:text-white transition-colors">
+                  How It Works
                 </button>
               </li>
               <li>
-                <button onClick={() => scrollTo("academic-research")} className="hover:text-white transition-colors">
-                  SCSCIT Research
+                <button onClick={() => scrollTo("academic-project")} className="hover:text-white transition-colors">
+                  Project Details
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Machine Learning Pipeline */}
           <div className="space-y-2">
-            <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">
-              Engine Stack
+            <h4 className="font-semibold text-white uppercase text-[11px] tracking-wider">
+              Technology Stack
             </h4>
-            <ul className="space-y-1.5 font-medium text-slate-400">
-              <li>Scikit-Learn 1.6.1 (Calibrated LinearSVC)</li>
+            <ul className="space-y-1.5 text-slate-400">
+              <li>Python 3.12 &bull; FastAPI</li>
+              <li>Scikit-Learn 1.6.1 (LinearSVC)</li>
               <li>NLTK WordNet Lemmatizer</li>
-              <li>6,000-D TF-IDF Vectorizer</li>
-              <li>FastAPI Async Engine</li>
-              <li>Next.js 14 App Router + Tailwind</li>
-              <li>Three.js 3D Holographic Canvas</li>
+              <li>Next.js 14 App Router</li>
+              <li>Tailwind CSS &bull; Three.js</li>
             </ul>
           </div>
 
-          {/* Developer / Project Links */}
           <div className="space-y-2">
-            <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">
-              Source &amp; Documentation
+            <h4 className="font-semibold text-white uppercase text-[11px] tracking-wider">
+              API &amp; Source
             </h4>
-            <ul className="space-y-1.5 font-medium">
+            <ul className="space-y-1.5">
               <li>
                 <a
                   href="https://github.com/Namayjain/fake-job-detector"
@@ -91,7 +85,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors flex items-center space-x-1"
                 >
-                  <Github className="w-3.5 h-3.5 text-slate-300" />
+                  <Github className="w-3.5 h-3.5 text-slate-400" />
                   <span>GitHub Repository</span>
                   <ExternalLink className="w-3 h-3 text-slate-500" />
                 </a>
@@ -103,8 +97,8 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors flex items-center space-x-1"
                 >
-                  <Terminal className="w-3.5 h-3.5 text-slate-300" />
-                  <span>Interactive Swagger API Docs</span>
+                  <Terminal className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Swagger API Docs</span>
                   <ExternalLink className="w-3 h-3 text-slate-500" />
                 </a>
               </li>
@@ -115,8 +109,8 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors flex items-center space-x-1"
                 >
-                  <Code2 className="w-3.5 h-3.5 text-slate-300" />
-                  <span>Backend Health Probe</span>
+                  <Code2 className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Health Check Endpoint</span>
                   <ExternalLink className="w-3 h-3 text-slate-500" />
                 </a>
               </li>
@@ -124,11 +118,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-3">
-          <p>&copy; {new Date().getFullYear()} SCSCIT JOB-AUTHENTICATOR &bull; All Rights Reserved.</p>
-          <p className="font-medium">
-            Engineered with Scikit-Learn, FastAPI, Next.js, and Three.js.
-          </p>
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+          <p>&copy; {new Date().getFullYear()} SCSCIT Job Authenticator. Academic Project.</p>
+          <p>Built with FastAPI, Scikit-Learn, and Next.js.</p>
         </div>
       </div>
     </footer>

@@ -8,18 +8,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-# Download required NLTK corpora quietly
 try:
     nltk.download('stopwords', quiet=True)
     nltk.download('wordnet', quiet=True)
     nltk.download('omw-1.4', quiet=True)
 except Exception as e:
-    print(f"Warning downloading NLTK corpora: {e}")
+    print(f"NLTK download error: {e}")
 
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-# Model and Vectorizer references
 model = None
 vectorizer = None
 lemmatizer = None
@@ -32,9 +30,7 @@ VECTORIZER_PATH = os.path.join(BASE_DIR, "tfidf_vectorizer.joblib")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global model, vectorizer, lemmatizer, stop_words
-    print("Loading ML models and NLP tools...")
     
-    # Load lemmatizer and stopwords
     lemmatizer = WordNetLemmatizer()
     try:
         stop_words = set(stopwords.words('english'))
@@ -42,7 +38,6 @@ async def lifespan(app: FastAPI):
         nltk.download('stopwords', quiet=True)
         stop_words = set(stopwords.words('english'))
 
-    # Load artifacts
     if not os.path.exists(MODEL_PATH):
         raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
     if not os.path.exists(VECTORIZER_PATH):
@@ -50,18 +45,15 @@ async def lifespan(app: FastAPI):
 
     model = joblib.load(MODEL_PATH)
     vectorizer = joblib.load(VECTORIZER_PATH)
-    print("Model and vectorizer loaded successfully!")
     yield
-    print("Shutting down...")
 
 app = FastAPI(
-    title="Real vs Fake Job Posting Detector API",
-    description="Machine Learning & NLP-powered API to detect fraudulent job listings",
+    title="SCSCIT Job Authenticator API",
+    description="Machine Learning & NLP API for detecting fraudulent job postings",
     version="1.0.0",
     lifespan=lifespan
 )
 
-# Enable CORS for full frontend communication
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -72,11 +64,11 @@ app.add_middleware(
 
 class JobPostingRequest(BaseModel):
     title: Optional[str] = Field(default="", description="Job title")
-    company_profile: Optional[str] = Field(default="", description="Company background information")
-    description: str = Field(..., description="Job posting description")
-    requirements: Optional[str] = Field(default="", description="Candidate requirements")
+    company_profile: Optional[str] = Field(default="", description="Company profile description")
+    description: str = Field(..., description="Main job description text")
+    requirements: Optional[str] = Field(default="", description="Job requirements")
     benefits: Optional[str] = Field(default="", description="Offered benefits")
-    has_company_logo: Optional[bool] = Field(default=True, description="Whether posting includes company logo")
+    has_company_logo: Optional[bool] = Field(default=True, description="Whether company logo is present")
 
 class PredictResponse(BaseModel):
     is_fraudulent: bool
@@ -89,103 +81,85 @@ class PredictResponse(BaseModel):
 
 def preprocess_text(text: str) -> str:
     """
-    NLP Preprocessing function:
-    1. Lowercase
-    2. Strip HTML tags
-    3. Regex URL removal
-    4. Email stripping
-    5. Punctuation & number removal
-    6. NLTK lemmatization and English stopword filtering (tokens > 2 chars)
+    Cleans raw text before vectorization:
+    1. Converts text to lowercase
+    2. Strips HTML markup tags
+    3. Removes URL links and email addresses
+    4. Removes numbers and punctuation
+    5. Lemmatizes words and removes common English stopwords
     """
     if not text:
         return ""
     
-    # 1. Lowercase
     text = text.lower()
-    
-    # 2. Strip HTML tags
     text = re.sub(r'<[^>]+>', ' ', text)
-    
-    # 3. Regex URL removal
     text = re.sub(r'http\S+|www\.\S+|https\S+', ' ', text, flags=re.MULTILINE)
-    
-    # 4. Email stripping
     text = re.sub(r'\S+@\S+', ' ', text)
-    
-    # 5. Punctuation and number removal
     text = re.sub(r'[^a-zA-Z\s]', ' ', text)
     
-    # 6. Lemmatization and stopword removal (tokens > 2 chars)
     words = text.split()
     cleaned_tokens = [
-        lemmatizer.lemmatize(w) 
-        for w in words 
-        if w not in stop_words and len(w) > 2
+        lemmatizer.lemmatize(word) 
+        for word in words 
+        if word not in stop_words and len(word) > 2
     ]
     
     return " ".join(cleaned_tokens)
 
-def detect_heuristic_flags(request: JobPostingRequest, raw_combined: str) -> List[str]:
+def detect_heuristic_flags(request: JobPostingRequest, raw_text: str) -> List[str]:
     """
-    Detect heuristic red flags in job posting data.
+    Rule-based heuristic checks for suspicious patterns in the posting.
     """
     flags = []
-    text_lower = raw_combined.lower()
+    text_lower = raw_text.lower()
     
-    # 1. Financial / Wire Transfer scams
     financial_keywords = [
         "wire transfer", "western union", "moneygram", "cryptocurrency", 
         "bitcoin", "cashier check", "cash app", "zelle", "payment transfer",
         "receiving package", "package forwarding", "mystery shopper",
         "processing fee", "registration fee", "upfront payment", "buy equipment yourself"
     ]
-    for kw in financial_keywords:
-        if kw in text_lower:
-            flags.append(f"Financial scam trigger phrase detected: '{kw}'")
+    for keyword in financial_keywords:
+        if keyword in text_lower:
+            flags.append(f"Financial transfer keyword detected: '{keyword}'")
 
-    # 2. Suspicious interview channels
     channel_keywords = [
         "telegram", "interview via telegram", "whatsapp interview", 
         "contact on telegram", "signal messenger", "google hangouts interview"
     ]
-    for ch in channel_keywords:
-        if ch in text_lower:
-            flags.append(f"Suspicious unverified interview channel detected: '{ch}'")
+    for channel in channel_keywords:
+        if channel in text_lower:
+            flags.append(f"Unverified messaging channel used for hiring: '{channel}'")
 
-    # 3. Company Logo check
     if not request.has_company_logo:
-        flags.append("Missing company logo (High empirical correlation with scam postings)")
+        flags.append("Company logo is missing (common indicator in scam listings)")
 
-    # 4. Vague or empty company profile
     profile = (request.company_profile or "").strip()
     if not profile or len(profile) < 40:
-        flags.append("Vague or missing company profile")
+        flags.append("Company profile is missing or brief")
 
-    # 5. Free public email domain in job description
-    public_email_match = re.search(r'[\w\.-]+@(gmail|yahoo|hotmail|outlook|protonmail)\.com', raw_combined, re.IGNORECASE)
-    if public_email_match:
-        flags.append(f"Public free email domain used for recruiting: '{public_email_match.group(0)}'")
+    public_email = re.search(r'[\w\.-]+@(gmail|yahoo|hotmail|outlook|protonmail)\.com', raw_text, re.IGNORECASE)
+    if public_email:
+        flags.append(f"Free public email domain used for recruiter contact: '{public_email.group(0)}'")
 
-    # 6. Unrealistic quick-cash or urgent phrasing
-    unrealistic_phrases = [
+    unrealistic_claims = [
         "no experience required earn", "earn $1000 daily", "earn $5000 a week", 
         "unlimited income", "immediate start no interview", "urgently hiring wire"
     ]
-    for phrase in unrealistic_phrases:
-        if phrase in text_lower:
-            flags.append(f"Suspicious compensation/hiring claim: '{phrase}'")
+    for claim in unrealistic_claims:
+        if claim in text_lower:
+            flags.append(f"Unrealistic income or hiring claim: '{claim}'")
 
-    # 7. Extremely brief job description
     desc = (request.description or "").strip()
     if len(desc.split()) < 20:
-        flags.append("Abnormally short job description lacking substantive role specifications")
+        flags.append("Job description is unusually short")
 
     return flags
 
 @app.get("/")
-def read_root():
+def root():
     return {
-        "service": "Real vs Fake Job Posting Detector API",
+        "service": "SCSCIT Job Authenticator API",
         "status": "online",
         "model_loaded": model is not None,
         "vectorizer_loaded": vectorizer is not None,
@@ -196,41 +170,32 @@ def read_root():
 def health_check():
     return {
         "status": "healthy",
-        "model": "CalibratedClassifierCV",
+        "model": "CalibratedClassifierCV (LinearSVC)",
         "features": 6000
     }
 
 @app.post("/predict", response_model=PredictResponse)
 def predict_job(posting: JobPostingRequest):
     if model is None or vectorizer is None:
-        raise HTTPException(status_code=503, detail="Model is still initializing or unavailable.")
+        raise HTTPException(status_code=503, detail="Machine learning models are not loaded.")
 
-    # Combine all text fields matching dataset format
-    raw_combined = f"{posting.title or ''} {posting.company_profile or ''} {posting.description or ''} {posting.requirements or ''} {posting.benefits or ''}".strip()
+    combined_text = f"{posting.title or ''} {posting.company_profile or ''} {posting.description or ''} {posting.requirements or ''} {posting.benefits or ''}".strip()
     
-    if not raw_combined:
-        raise HTTPException(status_code=400, detail="Job posting text cannot be entirely empty.")
+    if not combined_text:
+        raise HTTPException(status_code=400, detail="Job posting text cannot be empty.")
 
-    # Preprocess text
-    cleaned_text = preprocess_text(raw_combined)
+    cleaned_text = preprocess_text(combined_text)
+    features = vectorizer.transform([cleaned_text])
     
-    # Vectorize
-    vectorized_input = vectorizer.transform([cleaned_text])
-    
-    # Predict probabilities: class 0 = Authentic, class 1 = Fraudulent
-    probabilities = model.predict_proba(vectorized_input)[0]
+    probabilities = model.predict_proba(features)[0]
     prob_real = float(probabilities[0])
     prob_fake = float(probabilities[1])
     
-    # Risk percentage based on fake probability (0 to 100)
     risk_percentage = round(prob_fake * 100, 2)
     is_fraudulent = risk_percentage >= 50.0
-    
-    # Verdict string
     verdict = "High Risk (Likely Fake)" if is_fraudulent else "Low Risk (Likely Authentic)"
     
-    # Heuristic Red Flags
-    heuristic_flags = detect_heuristic_flags(posting, raw_combined)
+    heuristic_flags = detect_heuristic_flags(posting, combined_text)
     
     return PredictResponse(
         is_fraudulent=is_fraudulent,
@@ -245,4 +210,3 @@ def predict_job(posting: JobPostingRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-
