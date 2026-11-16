@@ -119,12 +119,12 @@ export default function ModelArchitecture() {
             </div>
           </div>
 
-          <div className="lg:col-span-6 relative h-64 sm:h-72 rounded-xl overflow-hidden border border-slate-200">
+          <div className="lg:col-span-6 relative h-72 sm:h-80 lg:h-96 rounded-xl overflow-hidden border border-slate-200 bg-slate-950 shadow-inner">
             <Image
-              src="/images/ai-cyber.jpg"
-              alt="Machine Learning Pipeline"
+              src="/images/model-evaluation.png"
+              alt="LinearSVC Model Evaluation Dashboard and Confusion Matrix"
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
         </div>
