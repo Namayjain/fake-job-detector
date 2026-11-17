@@ -9,6 +9,8 @@ import {
   Terminal,
 } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export default function Footer() {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -92,7 +94,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="http://localhost:8000/docs"
+                  href={`${API_URL}/docs`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors flex items-center space-x-1"
@@ -104,7 +106,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="http://localhost:8000/health"
+                  href={`${API_URL}/health`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors flex items-center space-x-1"
